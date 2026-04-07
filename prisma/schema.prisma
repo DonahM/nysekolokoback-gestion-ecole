@@ -1,0 +1,253 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user{
+  idUser      Int        @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  surname     String     @db.VarChar(255)
+  cin         String     @db.VarChar(255)
+  email       String     @db.VarChar(255)
+  roles       String     @db.VarChar(255)
+  logo        String     @db.VarChar(255)
+  lieu        String     @db.VarChar(255)
+  password    String     @db.VarChar(255)
+  isActive    Boolean    @default(true)
+  etudiants   etudiants[]
+  classE      classE[]
+  professeurs professeurs[]
+  matieres    matieres[]
+  semestre    semestre[]
+  years_schools years_schools[]
+  presence_prof presence_prof[]
+  actualites  actualites[]
+}
+
+model classE {
+  idCls       Int        @id @default(autoincrement())
+  name        String     @db.VarChar(255)
+  titulaire   String     @db.VarChar(255)
+  num         String     @db.VarChar(255)
+
+  idSchool    Int
+  years_schools        years_schools?      @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+
+  idUser      Int
+  user        user?      @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
+
+  etudiants   ClassE_Students[]
+  notes       notes[]
+  emploi_du_temps emploi_du_temps[]
+}
+
+model etudiants {
+  idEdt             Int        @id @default(autoincrement())
+  name              String     @db.VarChar(255)
+  surname           String     @db.VarChar(255)
+  date_naiss        String     @db.VarChar(255)
+  lieu_naiss        String     @db.VarChar(255)
+  sexe              String     @db.VarChar(255)
+  tel               String     @db.VarChar(255)
+  matricule         Int        @unique
+  adress_edt        String     @db.VarChar(255)
+  father            String     @db.VarChar(255)
+  jobs_f            String     @db.VarChar(255)
+  mother            String     @db.VarChar(255)
+  jobs_m            String     @db.VarChar(255)
+  tel_parent        String     @db.VarChar(255)
+  adresse_parent    String     @db.VarChar(255)
+  titeur            String     @db.VarChar(255)
+  tel_titeur        String     @db.VarChar(255)
+  adress_titeur     String     @db.VarChar(255)
+  ecole_anter       String     @db.VarChar(255)
+  image             String     @db.VarChar(255)
+  password          String     @db.VarChar(255)
+
+  idUser            Int
+  user             user?       @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
+
+  ecolages          ecolages[]
+  notes             notes[]
+  classE         ClassE_Students[]
+  years_schools           Students_Years[]
+}
+
+model ecolages{
+  idEco           Int           @id @default(autoincrement())
+  mois            String        @db.VarChar(255)
+  valeur          Int
+  statut          String        @db.VarChar(255)
+  date            String        @db.VarChar(255)
+  idEdt           Int
+  etudiants       etudiants?    @relation(fields: [idEdt], references: [idEdt], onDelete: NoAction, onUpdate: NoAction)
+  idSchool          Int
+  years_schools     years_schools?    @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model professeurs{
+  idProf          Int         @id @default(autoincrement())
+  name            String      @db.VarChar(255)
+  surname         String      @db.VarChar(255)
+  matiere         String      @db.VarChar(255)
+  idSchool        Int
+  years_schools   years_schools?    @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+  idUser          Int?
+  user            user?             @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
+  salaires        salaires[]
+  emploi_du_temps emploi_du_temps[]
+  presence_prof   presence_prof[]
+}
+
+model salaires{
+  idSal           Int         @id @default(autoincrement())
+  mois            String      @db.VarChar(255)
+  statut          String      @db.VarChar(255)
+  valeur          Int
+  date            String      @db.VarChar(255)
+  idProf          Int
+  professeurs     professeurs?    @relation(fields: [idProf], references: [idProf], onDelete: NoAction, onUpdate: NoAction)
+  idSchool          Int
+  years_schools     years_schools?    @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+}
+
+ model matieres{
+  idMat         Int           @id @default(autoincrement())
+  name          String        @db.VarChar(225)
+  idSchool      Int
+  years_schools years_schools?    @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+  idUser        Int?
+  user          user?         @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
+  notes         notes[]
+  emploi_du_temps emploi_du_temps[]
+ }
+
+ model notes{
+  idNot         Int           @id @default(autoincrement())
+  note          Int
+  coefficient   Int 
+  idEdt         Int
+  idMat         Int
+  etudiants     etudiants?    @relation(fields: [idEdt], references: [idEdt], onDelete: NoAction, onUpdate: NoAction)
+  matieres      matieres?     @relation(fields: [idMat], references: [idMat], onDelete: NoAction, onUpdate: NoAction)
+  
+  idSchool      Int
+  years_schools     years_schools?    @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+  
+  idSem         Int
+  semestre     semestre?    @relation(fields: [idSem], references: [idSem], onDelete: NoAction, onUpdate: NoAction)
+  
+  idCls         Int
+  classE     classE?    @relation(fields: [idCls], references: [idCls], onDelete: NoAction, onUpdate: NoAction)
+ }
+
+model semestre{
+  idSem           Int           @id @default(autoincrement())
+  name            String        @db.VarChar(255)
+  idSchool        Int
+  years_schools   years_schools?    @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+  idUser          Int?
+  user            user?         @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
+  notes           notes[]
+}
+
+ model years_schools {
+  idSchool       Int           @id @default(autoincrement())
+  annee_scolaire String        @db.VarChar(255)
+  idUser         Int?
+  user           user?         @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
+
+  etudiants      Students_Years[]
+  classE         classE[]
+  ecolages       ecolages[]
+  matieres       matieres[]
+  notes          notes[]
+  salaires       salaires[]
+  professeurs    professeurs[]
+  semestre       semestre[]
+  emploi_du_temps emploi_du_temps[]
+  presence_prof  presence_prof[]
+}
+
+
+/// Table de jointure entre `classE` et `etudiants`
+
+model ClassE_Students {
+  id           Int      @id @default(autoincrement())
+
+  idCls        Int
+  classE       classE   @relation(fields: [idCls], references: [idCls], onDelete: Cascade, onUpdate: Cascade)
+
+  idEdt        Int
+  etudiants     etudiants @relation(fields: [idEdt], references: [idEdt], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([idCls, idEdt]) // Évite la duplication
+}
+
+
+/// Table de jointure entre `etudiants` et `years_schools`
+
+model Students_Years {
+  id           Int      @id @default(autoincrement())
+
+  idEdt        Int
+  etudiants     etudiants @relation(fields: [idEdt], references: [idEdt], onDelete: Cascade, onUpdate: Cascade)
+
+  idSchool     Int
+  years_schools   years_schools @relation(fields: [idSchool], references: [idSchool], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([idEdt, idSchool]) // Évite la duplication
+}
+
+model emploi_du_temps {
+  id              Int           @id @default(autoincrement())
+  jour            String        @db.VarChar(255)
+  heureDebut      String        @db.VarChar(255)
+  heureFin        String        @db.VarChar(255)
+  
+  idMat           Int
+  matieres        matieres?     @relation(fields: [idMat], references: [idMat], onDelete: Cascade, onUpdate: Cascade)
+  
+  idProf          Int
+  professeurs     professeurs?  @relation(fields: [idProf], references: [idProf], onDelete: Cascade, onUpdate: Cascade)
+  
+  idCls           Int
+  classE          classE?       @relation(fields: [idCls], references: [idCls], onDelete: Cascade, onUpdate: Cascade)
+  
+  idSchool        Int
+  years_schools   years_schools? @relation(fields: [idSchool], references: [idSchool], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model presence_prof {
+  idPresence  Int         @id @default(autoincrement())
+  date        String      @db.VarChar(255)
+  heureDebut  String      @db.VarChar(255) 
+  heureFin    String      @db.VarChar(255) 
+  status      String      @db.VarChar(255) 
+  remarque    String?     @db.VarChar(255)
+  
+  idProf      Int
+  professeurs professeurs? @relation(fields: [idProf], references: [idProf], onDelete: Cascade, onUpdate: Cascade)
+  
+  idSchool    Int
+  years_schools years_schools? @relation(fields: [idSchool], references: [idSchool], onDelete: Cascade, onUpdate: Cascade)
+  
+  idUser      Int?
+  user        user?        @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: Cascade)
+}
+
+model actualites {
+  idActualite     Int      @id @default(autoincrement())
+  texte           String   @db.Text
+  mediaUrl        String?  @db.VarChar(255)
+  mediaType       String?  @db.VarChar(50) // "IMAGE" ou "VIDEO"
+  datePublication DateTime @default(now())
+  
+  idUser          Int?
+  user            user?    @relation(fields: [idUser], references: [idUser], onDelete: SetNull, onUpdate: Cascade)
+}
