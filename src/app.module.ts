@@ -26,7 +26,7 @@ import { I18nService } from './common/services/i18n.service';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public', 'browser'), // Dossier racine où se trouve 'upload'
+      rootPath: join(__dirname, '..', 'public'), // Dossier racine où se trouve 'upload'
       serveRoot: '/', // URL de base pour les fichiers
     }),
     PrismaModule,
