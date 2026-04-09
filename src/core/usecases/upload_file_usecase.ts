@@ -7,10 +7,7 @@ export default function UploadFileUsecase(
   file: Express.Multer.File
 ): string {
   const categoryAssetsPath = join(
-    __dirname,
-    '..',
-    '..',
-    '..',
+    process.cwd(),
     'public',
     'upload',
     directory,
