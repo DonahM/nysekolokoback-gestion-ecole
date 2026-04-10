@@ -35,6 +35,13 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document); // /api → URL Swagger
 
+  // Ajoutez cette ligne AVANT app.listen()
+  app.enableCors({
+    origin: '*', // Pour le test, on autorise tout. 
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+  });
+
   await app.listen(port, () => {
     console.log(`Server is running on port : http://localhost:${port}`);
   });
