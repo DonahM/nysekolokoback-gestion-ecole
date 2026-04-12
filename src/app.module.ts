@@ -18,6 +18,8 @@ import { StudentsYearsModule } from './features/students_years/students_years.mo
 import { EmploiDuTempsModule } from './features/emploi-du-temps/emploi-du-temps.module';
 import { PresenceProfModule } from './features/presence_prof/presence_prof.module';
 import { ActualitesModule } from './features/actualites/actualites.module';
+import { DepensesModule } from './features/depenses/depenses.module';
+import { FinancesModule } from './features/finances/finances.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LanguageMiddleware } from './common/middleware/language.middleware';
@@ -47,6 +49,8 @@ import { I18nService } from './common/services/i18n.service';
     EmploiDuTempsModule,
     PresenceProfModule,
     ActualitesModule,
+    DepensesModule,
+    FinancesModule,
   ],
   controllers: [],
   providers: [LanguageMiddleware, I18nService],

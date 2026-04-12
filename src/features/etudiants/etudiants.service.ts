@@ -163,7 +163,12 @@ export class EtudiantsService {
             },
             include: {
               classE: true,
-              years_schools: true
+              years_schools: true,
+              ecolages: {
+                include: {
+                  years_schools: true
+                }
+              }
             }
           });
           return etudiants;

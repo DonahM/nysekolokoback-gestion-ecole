@@ -27,6 +27,7 @@ model user{
   years_schools years_schools[]
   presence_prof presence_prof[]
   actualites  actualites[]
+  depenses    depenses[]
 }
 
 model classE {
@@ -172,6 +173,7 @@ model semestre{
   semestre       semestre[]
   emploi_du_temps emploi_du_temps[]
   presence_prof  presence_prof[]
+  depenses       depenses[]
 }
 
 
@@ -250,4 +252,20 @@ model actualites {
   
   idUser          Int?
   user            user?    @relation(fields: [idUser], references: [idUser], onDelete: SetNull, onUpdate: Cascade)
+}
+
+model depenses {
+  idDep           Int         @id @default(autoincrement())
+  titre           String      @db.VarChar(255)
+  description     String?     @db.Text
+  categorie       String?     @db.VarChar(255) // Ex: 'Factures', 'Achat de matériels', 'Entretien'
+  valeur          Int
+  date            String      @db.VarChar(255)
+  mois            String?     @db.VarChar(255)
+  
+  idSchool        Int
+  years_schools   years_schools? @relation(fields: [idSchool], references: [idSchool], onDelete: Cascade, onUpdate: Cascade)
+  
+  idUser          Int?
+  user            user?          @relation(fields: [idUser], references: [idUser], onDelete: SetNull, onUpdate: Cascade)
 }
