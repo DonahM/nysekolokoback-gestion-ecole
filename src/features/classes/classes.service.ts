@@ -17,6 +17,7 @@ export class ClassesService {
           name: createClassesDto.name,
           titulaire: createClassesDto.titulaire,
           num: createClassesDto.num,
+          niveau: createClassesDto.niveau || null,
           idSchool: createClassesDto.idSchool,
           idUser: createClassesDto.idUser
         },

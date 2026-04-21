@@ -35,9 +35,9 @@ export class ProfesseursController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('file'))
-  
-  
+  async update(@Param('id') idProf: string, @Body() updateDto: any) {
+    return this.proffesseursservice.update(+idProf, updateDto);
+  }
 
   @Delete(':id')
   async remove(@Param('id') idProf: string) {
@@ -47,5 +47,13 @@ export class ProfesseursController {
   @Get('/count')
   async count(@Headers('x-user-id') idUser?: string): Promise<number> {
     return this.proffesseursservice.count(idUser ? parseInt(idUser) : undefined);
+  }
+
+  @Post(':id/re-enroll')
+  async reEnroll(@Param('id') idProf: string, @Body('idSchool') idSchool: number) {
+    if (!idSchool) {
+      throw new HttpException('idSchool is required', 400);
+    }
+    return this.proffesseursservice.reEnroll(+idProf, +idSchool);
   }
 }

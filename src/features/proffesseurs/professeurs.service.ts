@@ -16,8 +16,13 @@ export class ProfesseursService {
           name: createProffresseursDto.name,
           surname: createProffresseursDto.surname,
           matiere: createProffresseursDto.matiere,
-          idSchool: createProffresseursDto.idSchool,
-          idUser: createProffresseursDto.idUser
+          taux_horaire: createProffresseursDto.taux_horaire || 0,
+          idUser: createProffresseursDto.idUser,
+          years_schools: {
+            create: {
+              idSchool: createProffresseursDto.idSchool
+            }
+          }
         },
       });
       return proffesseurs;
@@ -34,7 +39,11 @@ export class ProfesseursService {
           where: whereClause,
           include:{
             salaires:true,
-            years_schools: true,
+            years_schools: {
+              include: {
+                years_schools: true
+              }
+            },
           },
         }
       );
@@ -56,8 +65,24 @@ export class ProfesseursService {
               years_schools: true
             }
           },
-          years_schools: true,
+          years_schools: {
+            include: {
+              years_schools: true
+            }
+          },
         },
+      });
+      return proff;
+    } catch (error) {
+      throw exception(error);
+    }
+  }
+
+  async update(idProf: number, updateDto: any) {
+    try {
+      const proff = await this.prismaService.professeurs.update({
+        where: { idProf: idProf },
+        data: updateDto,
       });
       return proff;
     } catch (error) {
@@ -83,6 +108,19 @@ export class ProfesseursService {
       const whereClause = idUser ? { idUser } : {};
       const res = await this.prismaService.professeurs.count({ where: whereClause });
       return res;
+    } catch (error) {
+      throw exception(error);
+    }
+  }
+
+  async reEnroll(idProf: number, idSchool: number) {
+    try {
+      return await this.prismaService.professeurs_Years.create({
+        data: {
+          idProf: idProf,
+          idSchool: idSchool
+        }
+      });
     } catch (error) {
       throw exception(error);
     }

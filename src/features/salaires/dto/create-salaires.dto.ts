@@ -17,6 +17,11 @@ export class CreateSalairesDto {
   @IsOptional()
   valeur: number;
 
+  @IsNumber()
+  @ApiProperty()
+  @IsOptional()
+  heures_totales?: number;
+
   @IsNotEmpty()
   @ApiProperty()
   @IsString()

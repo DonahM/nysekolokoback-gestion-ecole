@@ -24,6 +24,15 @@ export class SalairesController {
     return this.salairesService.create(dto)
   }
 
+  @Get('calcul/:idProf')
+  calculerSalaire(
+    @Param('idProf') idProf: string,
+    @Query('start') start: string,
+    @Query('end') end: string
+  ) {
+    return this.salairesService.calculerSalaire(+idProf, start, end);
+  }
+
   @Get()
   findAll(@Headers('x-user-id') idUser?: string){
     return this.salairesService.findAll(idUser ? parseInt(idUser, 10) : undefined)

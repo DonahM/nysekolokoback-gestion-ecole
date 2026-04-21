@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Options, Body, Param, Delete, UseInterceptors, UploadedFile, ParseIntPipe, UseGuards, Req, Res, Headers } from '@nestjs/common';
+import { Controller, Get, Post, Options, Body, Param, Delete, Patch, UseInterceptors, UploadedFiles, ParseIntPipe, UseGuards, Req, Res, Headers, HttpException } from '@nestjs/common';
 import { ActualitesService } from './actualites.service';
 import { CreateActualiteDto } from './dto/create-actualite.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import * as fs from 'fs';
@@ -26,7 +26,7 @@ export class ActualitesController {
   constructor(private readonly actualitesService: ActualitesService) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file', { 
+  @UseInterceptors(FilesInterceptor('files', 20, { 
     storage,
     limits: {
       fileSize: 500 * 1024 * 1024, // 500MB
@@ -41,7 +41,7 @@ export class ActualitesController {
   }))
   create(
     @Body() createActualiteDto: CreateActualiteDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Array<Express.Multer.File>,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
     @Headers() headers: Record<string, string>,
@@ -52,7 +52,7 @@ export class ActualitesController {
     res.header('Access-Control-Expose-Headers', 'Content-Length, Content-Disposition');
     
     try {
-      const result = this.actualitesService.create(createActualiteDto, file);
+      const result = this.actualitesService.create(createActualiteDto, files);
       return result;
     } catch (error) {
       console.error('Erreur lors de la création de l\'actualité:', error);
@@ -78,9 +78,43 @@ export class ActualitesController {
   }
 
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+  async remove(
+    @Param('id', ParseIntPipe) id: number, 
+    @Req() req: Request, 
+    @Res({ passthrough: true }) res: Response,
+    @Headers('x-user-id') idUserStr?: string
+  ) {
     res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
     res.header('Access-Control-Allow-Credentials', 'true');
+    
+    const isSuperAdmin = await this.actualitesService.checkSuperAdmin(idUserStr);
+    if (!isSuperAdmin) {
+      throw new HttpException('Unauthorized: Only Super Admin can delete actualites', 403);
+    }
+    
     return this.actualitesService.remove(+id);
+  }
+
+  @Patch(':id')
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body('texte') texte: string,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    return this.actualitesService.update(+id, texte);
+  }
+
+  @Patch(':id/toggle-status')
+  toggleStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    return this.actualitesService.toggleStatus(+id);
   }
 }

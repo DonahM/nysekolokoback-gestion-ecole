@@ -30,7 +30,11 @@ export class YearsSchoolService {
               ecolages: true,
               professeurs: true,
               salaires: true,
-              classE: true
+              classE: {
+                include: {
+                  etudiants: true
+                }
+              }
             },
           });
         }
@@ -45,7 +49,11 @@ export class YearsSchoolService {
               ecolages: true,
               professeurs: true,
               salaires: true,
-              classE: true
+              classE: {
+                include: {
+                  etudiants: true
+                }
+              }
           },
         });
       }
@@ -75,6 +83,17 @@ export class YearsSchoolService {
         dto: CreateYearsSchoolDto,
       ): Promise<years_schools | HttpException> {
         try {
+          const existing = await this.prismaService.years_schools.findFirst({
+            where: {
+              annee_scolaire: dto.annee_scolaire,
+              idUser: dto.idUser
+            }
+          });
+
+          if (existing) {
+            throw new HttpException('Cette année scolaire existe déjà.', 400);
+          }
+
           const db = await this.prismaService.years_schools.create({
             data: {
               annee_scolaire: dto.annee_scolaire,
@@ -83,6 +102,7 @@ export class YearsSchoolService {
           });
           return db;
         } catch (error) {
+          if (error instanceof HttpException) throw error;
           throw exception(error);
         }
       }

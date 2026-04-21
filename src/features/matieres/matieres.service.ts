@@ -53,6 +53,25 @@ export class MatieresService {
     }
   }
 
+  async update(idMat: number, updateMatieresDto: Partial<CreateMatieresDto>): Promise<matieres | HttpException> {
+    try {
+      const dataToUpdate: any = {};
+      if (updateMatieresDto.name) dataToUpdate.name = updateMatieresDto.name;
+      if (updateMatieresDto.idSchool) dataToUpdate.idSchool = updateMatieresDto.idSchool;
+      if (updateMatieresDto.idUser) dataToUpdate.idUser = updateMatieresDto.idUser;
+
+      const res = await this.prismaService.matieres.update({
+        where: {
+          idMat: idMat,
+        },
+        data: dataToUpdate,
+      });
+      return res;
+    } catch (error) {
+      throw exception(error);
+    }
+  }
+
   async remove(idMat: number) {
     try {
       const res = await this.prismaService.matieres.delete({

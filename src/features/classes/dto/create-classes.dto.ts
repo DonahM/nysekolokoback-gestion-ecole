@@ -17,6 +17,11 @@ export class CreateClassesDto {
   @IsString()
   num: string;
 
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  niveau?: string;
+
   @IsNumber()
   @ApiProperty()
   @IsOptional()

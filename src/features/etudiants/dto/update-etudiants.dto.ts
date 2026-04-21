@@ -97,4 +97,8 @@ export class  UpdateEtudiantsDto extends PartialType(CreateEtudiantsDto){
   @ApiProperty()
   @IsOptional()
   idCls: number;
+
+  @IsOptional()
+  @ApiProperty()
+  isActive?: boolean;
 }

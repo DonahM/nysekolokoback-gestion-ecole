@@ -26,4 +26,9 @@ export class CreateProfesseursDto {
   @ApiProperty()
   @IsOptional()
   idUser: number;
+
+  @IsNumber()
+  @ApiProperty()
+  @IsOptional()
+  taux_horaire?: number;
 }

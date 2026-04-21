@@ -35,6 +35,10 @@ export class UserService {
           logo: dto.logo,
           lieu: dto.lieu,
           password: hashedPassword,
+          drene: dto.drene,
+          cisco: dto.cisco,
+          zap: dto.zap,
+          code: dto.code,
         },
       });
 

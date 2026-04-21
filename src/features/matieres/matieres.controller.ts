@@ -35,9 +35,9 @@ export class MatieresController {
   }
 
   @Patch(':id')
-  @UseInterceptors(FileInterceptor('file'))
-  
-  
+  async update(@Param('id') idMat: string, @Body() dto: CreateMatieresDto) {
+    return this.matieresservice.update(+idMat, dto);
+  }
 
   @Delete(':id')
   async remove(@Param('id') idCls: string) {

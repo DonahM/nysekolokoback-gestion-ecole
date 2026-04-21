@@ -19,6 +19,10 @@ model user{
   lieu        String     @db.VarChar(255)
   password    String     @db.VarChar(255)
   isActive    Boolean    @default(true)
+  drene       String?    @db.VarChar(255)
+  cisco       String?    @db.VarChar(255)
+  zap         String?    @db.VarChar(255)
+  code        String?    @db.VarChar(255)
   etudiants   etudiants[]
   classE      classE[]
   professeurs professeurs[]
@@ -28,6 +32,9 @@ model user{
   presence_prof presence_prof[]
   actualites  actualites[]
   depenses    depenses[]
+  revenus     revenus[]
+  sentMessages      message[] @relation("sentMessages")
+  receivedMessages  message[] @relation("receivedMessages")
 }
 
 model classE {
@@ -35,6 +42,7 @@ model classE {
   name        String     @db.VarChar(255)
   titulaire   String     @db.VarChar(255)
   num         String     @db.VarChar(255)
+  niveau      String?    @db.VarChar(255)
 
   idSchool    Int
   years_schools        years_schools?      @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
@@ -69,6 +77,7 @@ model etudiants {
   ecole_anter       String     @db.VarChar(255)
   image             String     @db.VarChar(255)
   password          String     @db.VarChar(255)
+  isActive          Boolean    @default(true)
 
   idUser            Int
   user             user?       @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
@@ -96,13 +105,13 @@ model professeurs{
   name            String      @db.VarChar(255)
   surname         String      @db.VarChar(255)
   matiere         String      @db.VarChar(255)
-  idSchool        Int
-  years_schools   years_schools?    @relation(fields: [idSchool], references: [idSchool], onDelete: NoAction, onUpdate: NoAction)
+  taux_horaire    Int         @default(0)
   idUser          Int?
   user            user?             @relation(fields: [idUser], references: [idUser], onDelete: NoAction, onUpdate: NoAction)
   salaires        salaires[]
   emploi_du_temps emploi_du_temps[]
   presence_prof   presence_prof[]
+  years_schools   Professeurs_Years[]
 }
 
 model salaires{
@@ -110,6 +119,7 @@ model salaires{
   mois            String      @db.VarChar(255)
   statut          String      @db.VarChar(255)
   valeur          Int
+  heures_totales  Float?
   date            String      @db.VarChar(255)
   idProf          Int
   professeurs     professeurs?    @relation(fields: [idProf], references: [idProf], onDelete: NoAction, onUpdate: NoAction)
@@ -169,11 +179,12 @@ model semestre{
   matieres       matieres[]
   notes          notes[]
   salaires       salaires[]
-  professeurs    professeurs[]
+  professeurs    Professeurs_Years[]
   semestre       semestre[]
   emploi_du_temps emploi_du_temps[]
   presence_prof  presence_prof[]
   depenses       depenses[]
+  revenus        revenus[]
 }
 
 
@@ -246,9 +257,10 @@ model presence_prof {
 model actualites {
   idActualite     Int      @id @default(autoincrement())
   texte           String   @db.Text
-  mediaUrl        String?  @db.VarChar(255)
-  mediaType       String?  @db.VarChar(50) // "IMAGE" ou "VIDEO"
+  mediaUrl        String?  @db.Text
+  mediaType       String?  @db.VarChar(50) // "IMAGE", "VIDEO" ou "MIXED"
   datePublication DateTime @default(now())
+  isActive        Boolean  @default(true)
   
   idUser          Int?
   user            user?    @relation(fields: [idUser], references: [idUser], onDelete: SetNull, onUpdate: Cascade)
@@ -268,4 +280,45 @@ model depenses {
   
   idUser          Int?
   user            user?          @relation(fields: [idUser], references: [idUser], onDelete: SetNull, onUpdate: Cascade)
+}
+
+model revenus {
+  idRev           Int         @id @default(autoincrement())
+  titre           String      @db.VarChar(255)
+  description     String?     @db.Text
+  categorie       String?     @db.VarChar(255) 
+  valeur          Int
+  date            String      @db.VarChar(255)
+  mois            String?     @db.VarChar(255)
+  
+  idSchool        Int
+  years_schools   years_schools? @relation(fields: [idSchool], references: [idSchool], onDelete: Cascade, onUpdate: Cascade)
+  
+  idUser          Int?
+  user            user?          @relation(fields: [idUser], references: [idUser], onDelete: SetNull, onUpdate: Cascade)
+}
+
+model message {
+  idMsg       Int      @id @default(autoincrement())
+  senderId    Int
+  receiverId  Int
+  content     String   @db.Text
+  dateEnvoi   String?  @db.VarChar(255)
+  isRead      Boolean  @default(false)
+  
+  sender      user     @relation("sentMessages", fields: [senderId], references: [idUser], onDelete: Cascade)
+  receiver    user     @relation("receivedMessages", fields: [receiverId], references: [idUser], onDelete: Cascade)
+}
+
+/// Table de jointure entre `professeurs` et `years_schools`
+model Professeurs_Years {
+  id           Int      @id @default(autoincrement())
+
+  idProf       Int
+  professeurs  professeurs @relation(fields: [idProf], references: [idProf], onDelete: Cascade, onUpdate: Cascade)
+
+  idSchool     Int
+  years_schools years_schools @relation(fields: [idSchool], references: [idSchool], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([idProf, idSchool])
 }

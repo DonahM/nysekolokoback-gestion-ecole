@@ -15,7 +15,16 @@ export class FinancesService {
           statut: { in: ['Payé', 'Paye'] }
         }
       });
-      const totalRevenus = ecolages.reduce((sum, eco) => sum + eco.valeur, 0);
+      const totalEcolages = ecolages.reduce((sum, eco) => sum + eco.valeur, 0);
+
+      const autresRevenus = await this.prismaService.revenus.findMany({
+        where: {
+          idSchool,
+          mois
+        }
+      });
+      const totalAutresRevenus = autresRevenus.reduce((sum, rev) => sum + rev.valeur, 0);
+      const totalRevenus = totalEcolages + totalAutresRevenus;
 
       const salaires = await this.prismaService.salaires.findMany({
         where: {
@@ -58,7 +67,13 @@ export class FinancesService {
           statut: { in: ['Payé', 'Paye'] }
         }
       });
-      const totalRevenus = ecolages.reduce((sum, eco) => sum + eco.valeur, 0);
+      const totalEcolages = ecolages.reduce((sum, eco) => sum + eco.valeur, 0);
+
+      const autresRevenus = await this.prismaService.revenus.findMany({
+        where: { idSchool }
+      });
+      const totalAutresRevenus = autresRevenus.reduce((sum, rev) => sum + rev.valeur, 0);
+      const totalRevenus = totalEcolages + totalAutresRevenus;
 
       const salaires = await this.prismaService.salaires.findMany({
         where: {

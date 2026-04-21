@@ -238,7 +238,8 @@ export class EtudiantsService {
               adress_titeur: updateEtudiantsDto.adress_titeur,
               ecole_anter : updateEtudiantsDto.ecole_anter ,
               image: updateEtudiantsDto.image,
-              password: updateEtudiantsDto.password
+              password: updateEtudiantsDto.password,
+              isActive: updateEtudiantsDto.isActive
             },
           });
           return updatedEtudiants;

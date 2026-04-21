@@ -24,6 +24,8 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { LanguageMiddleware } from './common/middleware/language.middleware';
 import { I18nService } from './common/services/i18n.service';
+import { RevenusModule } from './features/revenus/revenus.module';
+import { ChatModule } from './features/chat/chat.module';
 
 @Module({
   imports: [
@@ -51,6 +53,8 @@ import { I18nService } from './common/services/i18n.service';
     ActualitesModule,
     DepensesModule,
     FinancesModule,
+    RevenusModule,
+    ChatModule,
   ],
   controllers: [],
   providers: [LanguageMiddleware, I18nService],
